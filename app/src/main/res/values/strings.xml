@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">complete-firebase</string>
+    <string name="login">Login</string>
+    <string name="sign_in">Login</string>
+    <string name="sign_up_with_google">Sign in with Google</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="forgot_password">Forgot password</string>
+    <string name="sign_up_text">Don\'t have an account?</string>
 </resources>
