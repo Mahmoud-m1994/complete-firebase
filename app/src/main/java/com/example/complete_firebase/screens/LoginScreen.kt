@@ -1,8 +1,6 @@
 package com.example.complete_firebase.screens
 
-import android.graphics.drawable.Icon
 import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,7 +14,6 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material.icons.sharp.Email
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,10 +27,12 @@ import androidx.navigation.compose.rememberNavController
 import com.example.complete_firebase.R
 import com.example.complete_firebase.components.PrimaryButton
 import com.example.complete_firebase.components.TextButton
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthUserCollisionException
 
 const val TAG = "LoginScreen"
 @Composable
-fun LoginScreen(navController: NavController) {
+fun LoginScreen(navController: NavController, auth: FirebaseAuth) {
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -86,7 +85,7 @@ fun LoginScreen(navController: NavController) {
                 fontSize = 16,
                 textColor = Color.Blue,
                 onClick = {
-                    // navController.navigate(Screen.SignUpScreen.route)
+                    signUpUser(username, password, auth, navController)
                 }
             )
         }
@@ -102,8 +101,28 @@ fun LoginScreen(navController: NavController) {
     }
 }
 
+// Sign up user
+private fun signUpUser(
+    email: String,
+    password: String,
+    auth: FirebaseAuth,
+    navController: NavController,
+) {
+    auth.createUserWithEmailAndPassword(email, password)
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Log.d(com.example.complete_firebase.TAG, "createUserWithEmailAndPassword:success")
+            } else {
+                Log.w(com.example.complete_firebase.TAG, "createUserWithEmailAndPassword:failure", task.exception)
+                if (task.exception is FirebaseAuthUserCollisionException) {
+                    Log.d(com.example.complete_firebase.TAG, "User already exists")
+                }
+            }
+        }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    LoginScreen(navController = rememberNavController())
+    LoginScreen(navController = rememberNavController(), auth = FirebaseAuth.getInstance())
 }

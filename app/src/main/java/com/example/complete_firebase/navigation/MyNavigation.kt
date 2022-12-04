@@ -7,16 +7,17 @@ import androidx.navigation.compose.rememberNavController
 import com.example.complete_firebase.screens.LoginScreen
 import com.example.complete_firebase.screens.MainScreen
 import com.example.complete_firebase.screens.SplashScreen
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
-fun MyNavigation() {
+fun MyNavigation(firebaseAuth: FirebaseAuth) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Screen.SplashScreen.screenName) {
         composable(route = Screen.SplashScreen.screenName) {
             SplashScreen(navController = navController)
         }
         composable(route = Screen.LoginScreen.screenName) {
-            LoginScreen(navController = navController)
+            LoginScreen(navController = navController, auth = firebaseAuth)
         }
         composable(route = Screen.MainScreen.screenName) {
             MainScreen(navController = navController)
