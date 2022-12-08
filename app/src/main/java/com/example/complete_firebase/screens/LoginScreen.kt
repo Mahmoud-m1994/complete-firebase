@@ -27,6 +27,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.complete_firebase.R
 import com.example.complete_firebase.components.PrimaryButton
 import com.example.complete_firebase.components.TextButton
+import com.example.complete_firebase.navigation.Screen
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 
@@ -68,7 +69,7 @@ fun LoginScreen(navController: NavController, auth: FirebaseAuth) {
             text = stringResource(R.string.sign_in),
             icon = Icons.Rounded.Person,
             onClick = {
-                Log.d(TAG, "LoginScreen: username: $username, password: $password")
+                login(username, password, auth, navController)
             }
         )
 
@@ -117,6 +118,27 @@ private fun signUpUser(
                 if (task.exception is FirebaseAuthUserCollisionException) {
                     Log.d(com.example.complete_firebase.TAG, "User already exists")
                 }
+            }
+        }
+}
+
+// Sign in user
+private fun login(
+    email: String,
+    password: String,
+    auth: FirebaseAuth,
+    navController: NavController,
+){
+    auth.signInWithEmailAndPassword(email, password)
+        .addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                Log.d(TAG, "login: $task")
+                navController.navigate(Screen.MainScreen.getArg())
+                navController.currentDestination?.let {
+                    navController.graph.remove(navController.currentDestination!!)
+                }
+            } else {
+                Log.w(TAG, "signInWithEmailAndPassword:failure", task.exception)
             }
         }
 }
