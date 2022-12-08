@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.complete_firebase.screens.ForgotPasswordScreen
 import com.example.complete_firebase.screens.LoginScreen
 import com.example.complete_firebase.screens.MainScreen
 import com.example.complete_firebase.screens.SplashScreen
@@ -27,6 +28,9 @@ fun MyNavigation(firebaseAuth: FirebaseAuth) {
             BackHandler(enabled = true) {
                 Log.d("TAG", "MyNavigation: Back pressed")
             }
+        }
+        composable(route = Screen.ForgotPasswordScreen.screenName) {
+            ForgotPasswordScreen(navController = navController, auth = firebaseAuth)
         }
     }
 }

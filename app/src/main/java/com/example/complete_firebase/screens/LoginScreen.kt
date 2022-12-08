@@ -41,7 +41,7 @@ fun LoginScreen(navController: NavController, auth: FirebaseAuth) {
             .fillMaxSize()
             .padding(horizontal = 16.dp)
     ) {
-        var username by remember { mutableStateOf("") }
+        var mail by remember { mutableStateOf("") }
         var password by remember { mutableStateOf("") }
         Spacer(modifier = Modifier.height(32.dp))
         Icon(
@@ -54,9 +54,9 @@ fun LoginScreen(navController: NavController, auth: FirebaseAuth) {
         )
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedTextField(
-            value = username,
-            onValueChange = { username = it },
-            label = { Text(text = "Username") },
+            value = mail,
+            onValueChange = { mail = it },
+            label = { Text(text = "Mail") },
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
@@ -69,7 +69,7 @@ fun LoginScreen(navController: NavController, auth: FirebaseAuth) {
             text = stringResource(R.string.sign_in),
             icon = Icons.Rounded.Person,
             onClick = {
-                login(username, password, auth, navController)
+                login(mail, password, auth, navController)
             }
         )
 
@@ -86,18 +86,15 @@ fun LoginScreen(navController: NavController, auth: FirebaseAuth) {
                 fontSize = 16,
                 textColor = Color.Blue,
                 onClick = {
-                    signUpUser(username, password, auth, navController)
+                    signUpUser(mail, password, auth, navController)
                 }
             )
         }
-
         TextButton(
             text = stringResource(R.string.forgot_password),
             fontSize = 16,
             textColor = Color.Red,
-            onClick = {
-                // navController.navigate(Screen.SignUpScreen.route)
-            }
+            onClick = { navController.navigate(Screen.ForgotPasswordScreen.getArg()) }
         )
     }
 }
@@ -112,11 +109,12 @@ private fun signUpUser(
     auth.createUserWithEmailAndPassword(email, password)
         .addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                Log.d(com.example.complete_firebase.TAG, "createUserWithEmailAndPassword:success")
+                Log.d(TAG, "createUserWithEmailAndPassword:success")
+                login(email, password, auth, navController) // login user automatically after sign up
             } else {
-                Log.w(com.example.complete_firebase.TAG, "createUserWithEmailAndPassword:failure", task.exception)
+                Log.w(TAG, "createUserWithEmailAndPassword:failure", task.exception)
                 if (task.exception is FirebaseAuthUserCollisionException) {
-                    Log.d(com.example.complete_firebase.TAG, "User already exists")
+                    Log.d(TAG, "User already exists")
                 }
             }
         }
