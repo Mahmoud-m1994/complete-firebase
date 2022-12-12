@@ -14,7 +14,11 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Person
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,8 +36,14 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
 
 const val TAG = "LoginScreen"
+
 @Composable
-fun LoginScreen(navController: NavController, auth: FirebaseAuth) {
+fun LoginScreen(
+    navController: NavController,
+    auth: FirebaseAuth
+) {
+    var mail by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -41,8 +51,6 @@ fun LoginScreen(navController: NavController, auth: FirebaseAuth) {
             .fillMaxSize()
             .padding(horizontal = 16.dp)
     ) {
-        var mail by remember { mutableStateOf("") }
-        var password by remember { mutableStateOf("") }
         Spacer(modifier = Modifier.height(32.dp))
         Icon(
             painter = painterResource(id = R.drawable.firebase),
@@ -68,8 +76,9 @@ fun LoginScreen(navController: NavController, auth: FirebaseAuth) {
         PrimaryButton(
             text = stringResource(R.string.sign_in),
             icon = Icons.Rounded.Person,
+            enabled = mail.isNotBlank() && password.isNotBlank(),
             onClick = {
-                login(mail, password, auth, navController)
+                loginWithMailAndPassword(mail, password, auth, navController)
             }
         )
 
@@ -77,7 +86,8 @@ fun LoginScreen(navController: NavController, auth: FirebaseAuth) {
             text = stringResource(R.string.sign_up_with_google),
             onClick = {
                 Log.d(TAG, "sign up with google clicked")
-            }
+            },
+            enabled = false
         )
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(text = stringResource(R.string.sign_up_text))
@@ -106,22 +116,24 @@ private fun signUpUser(
     auth: FirebaseAuth,
     navController: NavController,
 ) {
-    auth.createUserWithEmailAndPassword(email, password)
-        .addOnCompleteListener { task ->
-            if (task.isSuccessful) {
-                Log.d(TAG, "createUserWithEmailAndPassword:success")
-                login(email, password, auth, navController) // login user automatically after sign up
-            } else {
-                Log.w(TAG, "createUserWithEmailAndPassword:failure", task.exception)
-                if (task.exception is FirebaseAuthUserCollisionException) {
-                    Log.d(TAG, "User already exists")
+    if (email.isNotBlank() && password.isNotBlank()) {
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Log.d(TAG, "createUserWithEmailAndPassword:success")
+                    loginWithMailAndPassword(email, password, auth, navController) // login user automatically after sign up
+                } else {
+                    Log.w(TAG, "createUserWithEmailAndPassword:failure", task.exception)
+                    if (task.exception is FirebaseAuthUserCollisionException) {
+                        Log.d(TAG, "User already exists")
+                    }
                 }
             }
-        }
+    }
 }
 
 // Sign in user
-private fun login(
+private fun loginWithMailAndPassword(
     email: String,
     password: String,
     auth: FirebaseAuth,
@@ -132,9 +144,6 @@ private fun login(
             if (task.isSuccessful) {
                 Log.d(TAG, "login: $task")
                 navController.navigate(Screen.MainScreen.getArg())
-                navController.currentDestination?.let {
-                    navController.graph.remove(navController.currentDestination!!)
-                }
             } else {
                 Log.w(TAG, "signInWithEmailAndPassword:failure", task.exception)
             }
