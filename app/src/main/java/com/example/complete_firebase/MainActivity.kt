@@ -9,10 +9,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.example.complete_firebase.navigation.MyNavigation
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.ktx.database
+import com.google.firebase.ktx.Firebase
 
 const val TAG = "MainActivity"
 private lateinit var auth: FirebaseAuth
+
 class MainActivity : ComponentActivity() {
+    private val firebase = Firebase.database
+    private val databaseRef = firebase.getReference("players")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         auth = FirebaseAuth.getInstance()
@@ -21,7 +26,10 @@ class MainActivity : ComponentActivity() {
                 modifier = Modifier.fillMaxSize(),
                 color = Color.White
             ) {
-                MyNavigation(auth)
+                MyNavigation(
+                    firebaseAuth = auth,
+                    databaseReference = databaseRef
+                )
             }
         }
     }

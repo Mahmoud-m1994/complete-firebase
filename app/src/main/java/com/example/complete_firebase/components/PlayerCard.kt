@@ -3,6 +3,7 @@ package com.example.complete_firebase.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -27,39 +28,49 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import com.example.complete_firebase.models.Player
+import com.example.complete_firebase.navigation.Screen
 
 @Composable
-fun PlayerProfileCard(player: Player) {
+fun PlayerProfileCard(
+    player: Player,
+    navController: NavController,
+) {
     Card(
         modifier = Modifier
             .wrapContentSize()
             .fillMaxWidth()
             .clip(RoundedCornerShape(4.dp))
             .background(color = Color.White)
-            .padding(16.dp),
+            .padding(16.dp)
+            .clickable(onClick = { cardClicked(navController, player) }),
     ) {
         Row(modifier = Modifier.height(intrinsicSize = IntrinsicSize.Max)) {
-            PlayerPicturePicture(player = player)
+            PlayerPicture(imageUrl = player.imageUrl, playerName = player.name)
             PlayerContent(player = player)
         }
     }
 }
+private fun cardClicked(navController: NavController, player: Player) {
+    navController.navigate(Screen.PlayerScreen.screenName + "/${player.id}")
+}
 
 @Composable
-fun PlayerPicturePicture(player: Player) {
+fun PlayerPicture(imageUrl: String, playerName: String, modifier: Modifier = Modifier) {
     Card(
         shape = CircleShape,
         border = BorderStroke(2.dp, color = Color.Green),
-        modifier = Modifier.size(48.dp),
+        modifier = modifier.size(80.dp),
         elevation = 4.dp
     ) {
         Image(
-            painter = rememberAsyncImagePainter(player.imageUrl),
+            painter = rememberAsyncImagePainter(imageUrl),
             contentScale = ContentScale.Crop,
             modifier = Modifier.size(48.dp),
-            contentDescription = "Profile picture for ${player.name}"
+            contentDescription = "Profile picture for $playerName"
         )
     }
 }
@@ -88,6 +99,7 @@ fun PlayerContent(player: Player) {
 @Composable
 private fun PlayerCardPreview() {
     val player = Player(
+        id = "1",
         name = "Lionel Messi",
         age = 36,
         height = 170,
@@ -95,5 +107,8 @@ private fun PlayerCardPreview() {
         currentClub = "PSG",
         imageUrl = "https://upload.wikimedia.org/wikipedia/commons/c/c1/Lionel_Messi_20180626.jpg"
     )
-    PlayerProfileCard(player = player)
+    PlayerProfileCard(
+        player = player,
+        navController = rememberNavController(),
+    )
 }

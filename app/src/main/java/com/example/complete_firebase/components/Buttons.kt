@@ -26,11 +26,10 @@ fun PrimaryButton(
     enabled: Boolean = true,
     onClick: () -> Unit,
 ) {
-    Button(onClick = onClick, enabled = enabled) {
+    Button(onClick = onClick, enabled = enabled, modifier = modifier) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
-            modifier = modifier
         ) {
             icon?.let { Icon(imageVector = icon, contentDescription = text)}
             Text(text = text)

@@ -5,6 +5,8 @@ sealed class Screen( val screenName: String) {
     object LoginScreen : Screen("login_screen")
     object MainScreen : Screen("main_screen")
     object ForgotPasswordScreen : Screen("forgot_password_screen")
+    object PlayerScreen : Screen("player_screen")
+    object AddPlayerScreen : Screen("add_player_screen")
 
     fun getArg(vararg args: String) : String {
         val output = buildString {

@@ -6,4 +6,5 @@
     <string name="sign_up">Sign Up</string>
     <string name="forgot_password">Forgot password</string>
     <string name="sign_up_text">Don\'t have an account?</string>
+    <string name="back_to_main_screen">Back to main screen</string>
 </resources>
